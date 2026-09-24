@@ -57,6 +57,8 @@ reports/
 *.html
 # Allow vercel.json for deployment configuration
 !vercel.json
+# Allow frontend index.html for Vite build
+!frontend/index.html
 # Ignore other JSON files
 results/*.json
 reports/*.json
