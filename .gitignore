@@ -55,7 +55,11 @@ dist-ssr/
 results/
 reports/
 *.html
-*.json
+# Allow vercel.json for deployment configuration
+!vercel.json
+# Ignore other JSON files
+results/*.json
+reports/*.json
 
 # Logs
 *.log

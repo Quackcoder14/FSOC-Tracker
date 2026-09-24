@@ -143,48 +143,53 @@ Key configuration options:
 The frontend uses environment variables:
 - `VITE_BACKEND_WS_URL`: WebSocket URL of the backend (default: `ws://127.0.0.1:8765`)
 
-## Deployment to Render
+## Deployment
 
-This application is configured for deployment on Render with both frontend and backend services.
+This application uses a hybrid deployment strategy:
+- **Backend**: Render (Python web service with long-running WebSocket/HTTP servers)
+- **Frontend**: Vercel (static site)
 
 ### Prerequisites
 
-- A Render account (free tier available)
+- Render account (free tier available)
+- Vercel account (free tier available)
 - Git repository with the code
 
-### Backend Deployment
+### Backend Deployment (Render)
 
 1. **Create a new Web Service** on Render
 2. Connect your Git repository
 3. Configure the service:
    - **Name**: `fsoc-tracker-backend`
    - **Runtime**: Python 3
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `python main.py --host 0.0.0.0 --port 8765 --http-port 8766`
+   - **Build Command**: `cd backend && pip install -r requirements.txt`
+   - **Start Command**: `cd backend && python main.py --host 0.0.0.0 --port 8765 --http-port 8766`
 4. Click "Deploy"
 
 Render will automatically detect the `Procfile` in the backend directory.
-
-### Frontend Deployment
-
-1. **Create a new Static Site** on Render
-2. Connect your Git repository
-3. Configure the site:
-   - **Name**: `fsoc-tracker-frontend`
-   - **Build Command**: `cd frontend && npm install && npm run build`
-   - **Publish Directory**: `frontend/dist`
-4. Add Environment Variable:
-   - **Key**: `VITE_BACKEND_WS_URL`
-   - **Value**: `wss://fsoc-tracker-backend.onrender.com` (replace with your backend URL)
-5. Click "Deploy"
 
 ### Using render.yaml (Alternative)
 
 Alternatively, use the provided `render.yaml` file for automatic service creation:
 
 1. Connect your repository to Render
-2. Render will automatically create both services based on the YAML configuration
-3. Update the `VITE_BACKEND_WS_URL` in the frontend service to match your backend URL
+2. Render will automatically create the backend service based on the YAML configuration
+
+### Frontend Deployment (Vercel)
+
+1. **Create a new project** on Vercel
+2. Connect your Git repository
+3. Configure the project:
+   - **Framework Preset**: Vite
+   - **Root Directory**: `./` (root of repository)
+   - **Build Command**: `cd frontend && npm install && npm run build`
+   - **Output Directory**: `frontend/dist`
+4. Add Environment Variable:
+   - **Key**: `VITE_BACKEND_WS_URL`
+   - **Value**: `wss://fsoc-tracker-backend.onrender.com` (replace with your actual backend URL)
+5. Click "Deploy"
+
+The `vercel.json` file in the repository root provides the necessary configuration for Vercel.
 
 ### Post-Deployment Configuration
 
@@ -192,10 +197,9 @@ After both services are deployed:
 
 1. Get your backend URL from Render (e.g., `https://fsoc-tracker-backend.onrender.com`)
 2. Update the frontend environment variable:
-   - Go to your frontend service on Render
-   - Navigate to "Environment"
+   - Go to your Vercel project → Settings → Environment Variables
    - Update `VITE_BACKEND_WS_URL` to `wss://your-backend-url.onrender.com`
-3. Redeploy the frontend service
+3. Redeploy the Vercel project
 
 ### Troubleshooting Deployment
 
@@ -203,16 +207,19 @@ After both services are deployed:
 - Check the Render logs for error messages
 - Ensure all dependencies in `requirements.txt` are compatible
 - Verify the start command is correct
+- Make sure the build command includes `cd backend`
 
 **Frontend can't connect to backend:**
 - Ensure both services are running
 - Check that `VITE_BACKEND_WS_URL` is set correctly (use `wss://` for HTTPS)
 - Verify the backend WebSocket server is accessible
+- Check Vercel deployment logs for any build errors
 
 **WebSocket connection issues:**
 - Render uses HTTPS, so use `wss://` for WebSocket URLs
 - Check that the backend is binding to `0.0.0.0` (not `127.0.0.1`)
 - Verify Render's network allows WebSocket connections
+- Check that the backend service is not in a suspended state
 
 ## Usage
 

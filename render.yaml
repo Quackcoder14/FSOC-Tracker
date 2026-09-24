@@ -1,21 +1,11 @@
 services:
-  # Frontend - Static Site
-  - type: web
-    name: fsoc-tracker-frontend
-    runtime: static
-    buildCommand: cd frontend && npm install && npm run build
-    publishDir: frontend/dist
-    envVars:
-      - key: VITE_BACKEND_WS_URL
-        value: wss://fsoc-tracker-backend.onrender.com
-        sync: false
-
   # Backend - Python Web Service
   - type: web
     name: fsoc-tracker-backend
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python main.py --host 0.0.0.0 --port 8765 --http-port 8766
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && python main.py --host 0.0.0.0 --port 8765 --http-port 8766
     envVars:
       - key: PYTHON_VERSION
         value: 3.10
+    plan: free

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "fsoc-tracker",
+  "version": "0.1.0",
+  "identifier": "com.tauri.dev",
+  "build": {
+    "frontendDist": "../frontend/dist",
+    "devUrl": "http://localhost:3000",
+    "beforeDevCommand": "npm.cmd run dev --prefix frontend",
+    "beforeBuildCommand": "npm.cmd run build --prefix frontend"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "FSOC Coarse Alignment Virtual Tracking System",
+        "width": 1280,
+        "height": 860,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "android": {
+      "debugApplicationIdSuffix": ".debug"
+    }
+  },
+  "capabilities": {
+    "default": {
+      "permissions": ["core:default", "dialog:default", "dialog:allow-open", "dialog:allow-save"]
+    }
+  }
+}
