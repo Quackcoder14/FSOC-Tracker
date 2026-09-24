@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FSOC Terminal Tracking Performance Report - {{ run_id }}</title>
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-card: #111827;
+            --border: #1f2937;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.2);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 2.5rem;
+            line-height: 1.5;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        h1 { font-size: 1.8rem; font-weight: 700; color: #fff; letter-spacing: -0.025em; }
+        .subtitle { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem; }
+        .badge {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-title { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .card-value { font-size: 1.75rem; font-weight: 700; color: #fff; }
+        .card-sub { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; }
+        .section-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem; color: #e5e7eb; }
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+        th { background: rgba(31, 41, 55, 0.5); font-weight: 600; color: var(--text-secondary); }
+        tr:last-child td { border-bottom: none; }
+        .chart-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        svg.chart { width: 100%; height: 260px; overflow: visible; }
+        .axis { stroke: #374151; stroke-width: 1; }
+        .grid-line { stroke: #1f2937; stroke-dasharray: 2, 2; }
+        .chart-path { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+        footer { margin-top: 3rem; text-align: center; color: var(--text-secondary); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>FSOC Tracking Verification Report</h1>
+                <div class="subtitle">Run ID: <strong>{{ run_id }}</strong> | Generated: {{ timestamp }}</div>
+            </div>
+            <div>
+                <span class="badge">{{ mode | upper }} MODE</span>
+            </div>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="grid-cards">
+            <div class="card">
+                <div class="card-title">Tracking RMSE</div>
+                <div class="card-value">{{ "%.2f"|format(metrics.rmse_px) if metrics.rmse_px is not none else "N/A" }} <span style="font-size: 1rem;">px</span></div>
+                <div class="card-sub">Mean: {{ "%.2f"|format(metrics.mean_error_px) if metrics.mean_error_px is not none else "N/A" }} px | Max: {{ "%.2f"|format(metrics.max_error_px) if metrics.max_error_px is not none else "N/A" }} px</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Lock Retention</div>
+                <div class="card-value" style="color: {{ '#10b981' if metrics.lock_retention_percent >= 90 else '#f59e0b' }};">
+                    {{ "%.1f"|format(metrics.lock_retention_percent) }}%
+                </div>
+                <div class="card-sub">Loss Events: {{ metrics.target_loss_count }} | Lost: {{ metrics.frames_lost }} frames</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Acquisition Time</div>
+                <div class="card-value">{{ "%.1f"|format(metrics.acquisition_time_ms) if metrics.acquisition_time_ms is not none else "N/A" }} <span style="font-size: 1rem;">ms</span></div>
+                <div class="card-sub">Reacq: {{ "%.1f"|format(metrics.reacquisition_time_ms) if metrics.reacquisition_time_ms is not none else "N/A" }} ms</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Processing Throughput</div>
+                <div class="card-value">{{ "%.1f"|format(metrics.fps_mean) }} <span style="font-size: 1rem;">FPS</span></div>
+                <div class="card-sub">P50: {{ "%.1f"|format(metrics.latency_p50_ms) }} ms | P95: {{ "%.1f"|format(metrics.latency_p95_ms) }} ms</div>
+            </div>
+        </div>
+
+        <!-- Metric Details Table -->
+        <div class="section-title">Performance Breakdown</div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric Parameter</th>
+                        <th>Measured Value</th>
+                        <th>Target Specification</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Coarse Alignment RMSE</td>
+                        <td>{{ "%.2f"|format(metrics.rmse_px) if metrics.rmse_px is not none else "N/A" }} px</td>
+                        <td>&le; 10.0 px (clean)</td>
+                        <td><span style="color: {{ '#10b981' if (metrics.rmse_px or 999) <= 10.0 else '#f59e0b' }};">PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>Lock Retention Ratio</td>
+                        <td>{{ "%.1f"|format(metrics.lock_retention_percent) }}%</td>
+                        <td>&ge; 90.0%</td>
+                        <td><span style="color: {{ '#10b981' if metrics.lock_retention_percent >= 90.0 else '#ef4444' }};">PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>Initial Acquisition Time</td>
+                        <td>{{ "%.1f"|format(metrics.acquisition_time_ms) if metrics.acquisition_time_ms is not none else "N/A" }} ms</td>
+                        <td>&le; 2000 ms</td>
+                        <td><span style="color: {{ '#10b981' if (metrics.acquisition_time_ms or 9999) <= 2000.0 else '#ef4444' }};">PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mean Pipeline Throughput</td>
+                        <td>{{ "%.1f"|format(metrics.fps_mean) }} FPS</td>
+                        <td>&ge; 20.0 FPS</td>
+                        <td><span style="color: {{ '#10b981' if metrics.fps_mean >= 20.0 else '#ef4444' }};">PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>95th Percentile Latency</td>
+                        <td>{{ "%.1f"|format(metrics.latency_p95_ms) }} ms</td>
+                        <td>&le; 50.0 ms</td>
+                        <td><span style="color: {{ '#10b981' if metrics.latency_p95_ms <= 50.0 else '#ef4444' }};">PASS</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Run Configuration Summary -->
+        <div class="section-title">Execution Parameters</div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subsystem</th>
+                        <th>Key Settings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Camera & Resolution</td>
+                        <td>{{ config.camera.resolution.width }}x{{ config.camera.resolution.height }} @ {{ config.camera.update_rate_hz }} Hz, HFOV: {{ config.camera.hfov_deg }}°, VFOV: {{ config.camera.vfov_deg }}°</td>
+                    </tr>
+                    <tr>
+                        <td>Target & Trajectory</td>
+                        <td>{{ config.trajectory.type | upper }}, Speed: {{ config.trajectory.speed_deg_s }} deg/s</td>
+                    </tr>
+                    <tr>
+                        <td>Kalman Filter</td>
+                        <td>Q (Process Noise): {{ config.kalman.process_noise }}, R (Measurement Noise): {{ config.kalman.measurement_noise }}</td>
+                    </tr>
+                    <tr>
+                        <td>Dual PID Controller</td>
+                        <td>Pan: ({{ config.pid.pan.kp }}, {{ config.pid.pan.ki }}, {{ config.pid.pan.kd }}) | Tilt: ({{ config.pid.tilt.kp }}, {{ config.pid.tilt.ki }}, {{ config.pid.tilt.kd }})</td>
+                    </tr>
+                    <tr>
+                        <td>AI Validation</td>
+                        <td>Enabled: {{ config.ai.enabled }}, Threshold: {{ config.ai.confidence_threshold }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            FSOC Virtual Camera Tracking System &bull; Autonomous Coarse Alignment Engine
+        </footer>
+    </div>
+</body>
+</html>

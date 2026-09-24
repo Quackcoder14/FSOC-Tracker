@@ -1,0 +1,24 @@
+system:
+  name: "FSOC Benchmark Mode"
+  seed: 0
+
+tracking:
+  acquisition_frames: 3
+  max_prediction_frames: 15
+  detection_confidence_threshold: 0.50
+
+kalman:
+  process_noise: 800.0
+  measurement_noise: 1.5
+
+performance:
+  telemetry_hz: 30
+  benchmark_fps: 30
+
+disturbances:
+  gaussian:
+    enabled: false
+  camera_jitter:
+    enabled: false
+  atmosphere:
+    type: "clear"

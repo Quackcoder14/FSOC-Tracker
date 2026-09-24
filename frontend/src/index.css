@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================================================
+   FSOC TRACKER — DESIGN TOKEN SYSTEM
+   Coarse Alignment & Virtual PAT
+   =================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* Background / Structure */
+  --bg-0: #070B12;
+  --bg-1: #0B111B;
+  --bg-2: #101827;
+
+  /* Panel / Surface */
+  --surface-1: #111A28;
+  --surface-2: #162133;
+  --surface-3: #1B283B;
+
+  /* Borders */
+  --border: #26364A;
+  --border-subtle: #1B2839;
+  --border-strong: #34475E;
+
+  /* Primary Identity */
+  --space-blue: #155A8A;
+  --space-blue-bright: #1F78B4;
+
+  /* Indian Identity Accent */
+  --saffron: #F28C28;
+  --saffron-bright: #F6A23A;
+
+  /* Text */
+  --text-primary: #E8EDF3;
+  --text-secondary: #AAB7C5;
+  --text-muted: #738397;
+
+  /* Semantic Status */
+  --success: #38A169;
+  --warning: #D99A24;
+  --danger: #D9534F;
+  --info: #4B93C3;
+
+  /* Font families */
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ===================================================
+   BASE RESET
+   =================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-0);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===================================================
+   TYPOGRAPHY — IBM Plex Sans for all UI text
+   IBM Plex Mono ONLY for data/telemetry
+   =================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Telemetry / data values use mono — applied via class only */
+.font-telemetry {
+  font-family: var(--font-mono);
+}
+
+/* ===================================================
+   SCROLLBARS
+   =================================================== */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-1);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* ===================================================
+   RANGE INPUTS — Engineering style
+   =================================================== */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--space-blue-bright);
+  cursor: pointer;
+  border: 1px solid var(--border-strong);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--saffron);
+}
+
+input[type="range"]:disabled::-webkit-slider-thumb {
+  background: var(--border);
+  cursor: not-allowed;
+}
+
+/* ===================================================
+   CHECKBOXES — Engineering style
+   =================================================== */
+
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  background: var(--surface-2);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+}
+
+input[type="checkbox"]:checked {
+  background: var(--space-blue);
+  border-color: var(--space-blue-bright);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 5px;
+  height: 8px;
+  border: 1.5px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+/* ===================================================
+   SELECT INPUTS
+   =================================================== */
+
+select {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+select:focus {
+  border-color: var(--space-blue-bright);
+}
+
+/* ===================================================
+   TEXT INPUTS
+   =================================================== */
+
+input[type="text"],
+input[type="number"] {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 7px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 150ms;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: var(--space-blue-bright);
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder {
+  color: var(--text-muted);
+}
+
+/* ===================================================
+   FOCUS VISIBLE
+   =================================================== */
+
+*:focus-visible {
+  outline: 2px solid var(--space-blue-bright);
+  outline-offset: 2px;
+}
+
+/* ===================================================
+   SELECTION
+   =================================================== */
+
+::selection {
+  background: var(--space-blue);
+  color: var(--text-primary);
+}
+
+/* ===================================================
+   UTILITY CLASSES
+   =================================================== */
+
+.panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.panel-sub {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+}
+
+.section-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.border-separator {
+  border-top: 1px solid var(--border);
+}
+
+/* Status dot */
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot-success { background-color: var(--success); }
+.status-dot-warning { background-color: var(--warning); }
+.status-dot-danger  { background-color: var(--danger); }
+.status-dot-info    { background-color: var(--info); }
+.status-dot-muted   { background-color: var(--text-muted); }
+
+/* Status dot attribute selectors for inline style colors */
+.status-dot[style*="38A169"] { background-color: var(--success) !important; }
+.status-dot[style*="D99A24"] { background-color: var(--warning) !important; }
+.status-dot[style*="D9534F"] { background-color: var(--danger) !important; }
+.status-dot[style*="4B93C3"] { background-color: var(--info) !important; }
+.status-dot[style*="738397"] { background-color: var(--text-muted) !important; }
+.status-dot[style*="F28C28"] { background-color: var(--saffron) !important; }
+.status-dot[style*="1F78B4"] { background-color: var(--space-blue-bright) !important; }
+
+/* RoundRect polyfill for Canvas 2D - handled in JS, not CSS */
+
+/* ===================================================
+   TEXT SELECTION — Make meaningful data selectable
+   =================================================== */
+
+.selectable {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Prevent selection on interactive elements */
+canvas,
+button,
+input[type="range"],
+input[type="checkbox"],
+input[type="text"],
+input[type="number"],
+select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Fullscreen content - make content fill screen while preserving aspect ratio */
+.fullscreen-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.fullscreen-content > div {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

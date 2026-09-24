@@ -1,0 +1,103 @@
+system:
+  name: "FSOC Coarse Alignment Tracker"
+  target_fps: 30
+  processing_fps_target: 20
+  seed: 42
+
+camera:
+  resolution:
+    width: 640
+    height: 480
+  hfov_deg: 4.0
+  vfov_deg: 3.0
+  max_pan_speed_deg_s: 5.0
+  max_tilt_speed_deg_s: 5.0
+  update_rate_hz: 30
+
+beacon:
+  size_px: 10
+  min_size_px: 5
+  max_size_px: 20
+
+tracking:
+  acquisition_frames: 5
+  max_prediction_frames: 10
+  reacquisition_timeout_ms: 1000
+  detection_confidence_threshold: 0.60
+
+kalman:
+  process_noise: 1.0
+  measurement_noise: 5.0
+  initial_covariance: 100.0
+
+pid:
+  pan:
+    kp: 0.8
+    ki: 0.02
+    kd: 0.10
+  tilt:
+    kp: 0.8
+    ki: 0.02
+    kd: 0.10
+
+trajectory:
+  type: "circular"
+  speed_deg_s: 1.5
+  amplitude_x: 1.0
+  amplitude_y: 0.7
+  duration_s: 60
+  initial_pan_deg: 0.0
+  initial_tilt_deg: 0.0
+
+disturbances:
+  gaussian:
+    enabled: false
+    sigma: 10
+  salt_pepper:
+    enabled: false
+    probability: 0.05
+  poisson:
+    enabled: false
+  blur:
+    enabled: false
+    kernel_size: 3
+  haze:
+    enabled: false
+    intensity: 0.3
+  fog:
+    enabled: false
+    intensity: 0.5
+  rain:
+    enabled: false
+    intensity: 0.3
+  low_light:
+    enabled: false
+    gamma: 2.5
+  camera_jitter:
+    enabled: false
+    max_px_per_frame: 5
+  platform_motion:
+    enabled: false
+    max_px_per_frame: 5
+  atmosphere:
+    type: "clear"
+
+performance:
+  telemetry_hz: 20
+  benchmark_fps: 30
+
+logging:
+  level: "INFO"
+  log_to_file: true
+  log_dir: "logs"
+
+ai:
+  model_path: "models/beacon_validator.onnx"
+  enabled: true
+  confidence_threshold: 0.7
+  invoke_on_ambiguous: true
+  max_candidates_for_ai: 5
+
+output:
+  results_dir: "results"
+  reports_dir: "reports"

@@ -1,0 +1,28 @@
+system:
+  name: "FSOC Demo — Automatic Demonstration"
+  seed: 42
+
+trajectory:
+  type: "figure8"
+  speed_deg_s: 2.0
+  amplitude_x: 1.2
+  amplitude_y: 0.8
+  duration_s: 45
+
+disturbances:
+  gaussian:
+    enabled: true
+    sigma: 8
+  camera_jitter:
+    enabled: true
+    max_px_per_frame: 4
+  haze:
+    enabled: true
+    intensity: 0.25
+
+tracking:
+  acquisition_frames: 4
+  detection_confidence_threshold: 0.55
+
+performance:
+  telemetry_hz: 20

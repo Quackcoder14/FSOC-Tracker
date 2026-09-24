@@ -1,0 +1,43 @@
+system:
+  name: "FSOC Stress Test"
+  seed: 99
+
+trajectory:
+  type: "random"
+  speed_deg_s: 3.5
+  duration_s: 120
+
+tracking:
+  max_prediction_frames: 15
+  reacquisition_timeout_ms: 2000
+  detection_confidence_threshold: 0.45
+
+disturbances:
+  gaussian:
+    enabled: true
+    sigma: 20
+  salt_pepper:
+    enabled: true
+    probability: 0.08
+  poisson:
+    enabled: true
+  blur:
+    enabled: true
+    kernel_size: 5
+  haze:
+    enabled: true
+    intensity: 0.45
+  camera_jitter:
+    enabled: true
+    max_px_per_frame: 12
+  platform_motion:
+    enabled: true
+    max_px_per_frame: 10
+  low_light:
+    enabled: true
+    gamma: 3.0
+  atmosphere:
+    type: "fog"
+
+performance:
+  telemetry_hz: 20
