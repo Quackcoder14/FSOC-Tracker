@@ -162,18 +162,12 @@ This application uses a hybrid deployment strategy:
 3. Configure the service:
    - **Name**: `fsoc-tracker-backend`
    - **Runtime**: Python 3
-   - **Build Command**: `cd backend && pip install -r requirements.txt`
-   - **Start Command**: `cd backend && python main.py --host 0.0.0.0 --port 8765 --http-port 8766`
+   - **Root Directory**: `backend`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python main.py --host 0.0.0.0 --port 8765 --http-port 8766`
 4. Click "Deploy"
 
 Render will automatically detect the `Procfile` in the backend directory.
-
-### Using render.yaml (Alternative)
-
-Alternatively, use the provided `render.yaml` file for automatic service creation:
-
-1. Connect your repository to Render
-2. Render will automatically create the backend service based on the YAML configuration
 
 ### Frontend Deployment (Vercel)
 
