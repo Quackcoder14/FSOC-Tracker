@@ -21,7 +21,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-const HTTP_UPLOAD_URL = "http://127.0.0.1:8766";
+const HTTP_UPLOAD_URL = import.meta.env.VITE_BACKEND_HTTP_URL || "http://127.0.0.1:8766";
 
 interface BenchmarkViewProps {
   telemetry: TelemetryPacket | null;
@@ -100,10 +100,10 @@ async function uploadFile(file: File, endpoint: "video" | "gt"): Promise<string>
 
 export const BenchmarkView: React.FC<BenchmarkViewProps> = ({ telemetry, onNavigateToResults }) => {
   const [videoSel, setVideoSel] = useState<FileSelection>(
-    makeSelection("data/demo/clean/clean_trajectory.mp4")
+    makeSelection("")
   );
   const [gtSel, setGtSel] = useState<FileSelection>(
-    makeSelection("data/demo/clean/ground_truth.csv")
+    makeSelection("")
   );
 
   const [benchmarkState, setBenchmarkState] = useState<
