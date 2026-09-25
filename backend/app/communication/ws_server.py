@@ -223,7 +223,7 @@ class WebSocketServer:
                 file_data = data.get("data")  # base64 encoded
                 if not file_data:
                     await self._reply_error(websocket, cmd, "MISSING_DATA", "No file data provided")
-                    continue
+                    return
 
                 logger.info("Received upload request: %s, data size: %d bytes", filename, len(file_data))
 
@@ -250,7 +250,7 @@ class WebSocketServer:
                 file_data = data.get("data")  # base64 encoded
                 if not file_data:
                     await self._reply_error(websocket, cmd, "MISSING_DATA", "No file data provided")
-                    continue
+                    return
 
                 logger.info("Received GT upload request: %s, data size: %d bytes", filename, len(file_data))
 
