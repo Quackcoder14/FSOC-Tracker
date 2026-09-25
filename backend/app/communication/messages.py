@@ -29,6 +29,8 @@ class CommandType(str, Enum):
     SET_SCENARIO = "SET_SCENARIO"
     GENERATE_REPORT = "GENERATE_REPORT"
     PING = "PING"
+    UPLOAD_VIDEO = "UPLOAD_VIDEO"
+    UPLOAD_GT = "UPLOAD_GT"
 
 
 class MessageType(str, Enum):

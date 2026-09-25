@@ -239,6 +239,14 @@ export class WebSocketService {
     this.send({ command: "UPDATE_CAMERA", camera });
   }
 
+  public uploadVideo(filename: string, data: string): void {
+    this.send({ command: "UPLOAD_VIDEO", filename, data });
+  }
+
+  public uploadGt(filename: string, data: string): void {
+    this.send({ command: "UPLOAD_GT", filename, data });
+  }
+
   public onCommandResult(fn: Listener<CommandResult>): () => void {
     this.commandResultListeners.add(fn);
     return () => this.commandResultListeners.delete(fn);

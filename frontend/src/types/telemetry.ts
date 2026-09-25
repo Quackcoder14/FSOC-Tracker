@@ -112,5 +112,6 @@ export interface CommandResult {
   status: "applied" | "error";
   result?: Record<string, any>;
   error?: string;
+  configuration?: Record<string, any>;
 }
 

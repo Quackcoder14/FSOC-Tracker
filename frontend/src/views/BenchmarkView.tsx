@@ -21,7 +21,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-const HTTP_UPLOAD_URL = import.meta.env.VITE_BACKEND_HTTP_URL || "http://127.0.0.1:8766";
+
 
 interface BenchmarkViewProps {
   telemetry: TelemetryPacket | null;
@@ -66,36 +66,50 @@ function makeSelection(displayName: string): FileSelection {
   return { displayName, serverPath: displayName || null, file: null, needsUpload: false };
 }
 
-/** Upload a File to the backend and return the server-side path */
+/** Upload a File to the backend via WebSocket and return the server-side path */
 async function uploadFile(file: File, endpoint: "video" | "gt"): Promise<string> {
-  const form = new FormData();
-  form.append("file", file);
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-  let resp: Response;
-  try {
-    resp = await fetch(`${HTTP_UPLOAD_URL}/upload/${endpoint}`, {
-      method: "POST",
-      body: form,
-    });
-  } catch (networkErr: any) {
-    // "Failed to fetch" means the HTTP server is not reachable
-    throw new Error(
-      `Cannot reach the upload server at ${HTTP_UPLOAD_URL}. ` +
-      `Make sure the backend is running (python main.py) and has been restarted ` +
-      `after the latest changes. Port 8766 must be open.`
-    );
-  }
+    reader.onload = () => {
+      const base64Data = reader.result as string;
+      const command = endpoint === "video" ? "UPLOAD_VIDEO" : "UPLOAD_GT";
 
-  if (!resp.ok) {
-    const body = await resp.json().catch(() => ({}));
-    throw new Error(body.error || `Upload failed (HTTP ${resp.status})`);
-  }
+      // Send file via WebSocket
+      if (endpoint === "video") {
+        wsService.uploadVideo(file.name, base64Data);
+      } else {
+        wsService.uploadGt(file.name, base64Data);
+      }
 
-  const json = await resp.json();
-  if (!json.ok || !json.path) {
-    throw new Error(json.error || "Server returned no path");
-  }
-  return json.path as string;
+      // Wait for response
+      const unsubscribe = wsService.onCommandResult((res) => {
+        if (res.type === "COMMAND_APPLIED" && res.command === command) {
+          unsubscribe();
+          if (res.configuration?.path) {
+            resolve(res.configuration.path as string);
+          } else {
+            reject(new Error("Server returned no path"));
+          }
+        } else if (res.type === "COMMAND_ERROR" && res.command === command) {
+          unsubscribe();
+          reject(new Error(res.error || "Upload failed"));
+        }
+      });
+
+      // Timeout after 30 seconds
+      setTimeout(() => {
+        unsubscribe();
+        reject(new Error("Upload timeout"));
+      }, 30000);
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Failed to read file"));
+    };
+
+    reader.readAsDataURL(file);
+  });
 }
 
 export const BenchmarkView: React.FC<BenchmarkViewProps> = ({ telemetry, onNavigateToResults }) => {

@@ -14,8 +14,11 @@ Every command (except STEP, PING, GENERATE_REPORT) receives either:
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import logging
+import time
+from pathlib import Path
 from typing import Any, Dict, Optional, Set
 
 import websockets
@@ -25,6 +28,9 @@ from app.core.engine import Engine
 from app.communication.messages import CommandType, MessageType, serialize_message, deserialize_message
 
 logger = logging.getLogger(__name__)
+
+# Where uploaded files are stored
+_UPLOAD_DIR = Path("results") / "uploads"
 
 
 class WebSocketServer:
@@ -42,6 +48,9 @@ class WebSocketServer:
 
         # Connect engine's telemetry emission to our broadcast method
         self.engine.set_telemetry_callback(self.broadcast_telemetry)
+
+        # Ensure upload directory exists
+        _UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
     async def start(self) -> None:
         """Start the WebSocket server listening loop."""
@@ -207,6 +216,55 @@ class WebSocketServer:
 
             elif cmd == CommandType.PING.value:
                 await websocket.send(json.dumps({"type": MessageType.PONG.value}))
+
+            # ── File uploads ───────────────────────────────────────────
+            elif cmd == CommandType.UPLOAD_VIDEO.value:
+                filename = data.get("filename", "video_upload.mp4")
+                file_data = data.get("data")  # base64 encoded
+                if not file_data:
+                    await self._reply_error(websocket, cmd, "MISSING_DATA", "No file data provided")
+                    continue
+
+                try:
+                    # Decode base64 and save file
+                    file_bytes = base64.b64decode(file_data)
+                    ts = int(time.time() * 1000)
+                    ext = Path(filename).suffix.lstrip(".").lower() or "mp4"
+                    dest_name = f"video_{ts}.{ext}"
+                    dest_path = _UPLOAD_DIR / dest_name
+
+                    with dest_path.open("wb") as f:
+                        f.write(file_bytes)
+
+                    logger.info("Video uploaded via WebSocket: %s (%.1f KB)", dest_name, len(file_bytes) / 1024)
+                    await self._reply_applied(websocket, cmd, {"path": str(dest_path.resolve()), "filename": dest_name})
+                except Exception as e:
+                    logger.error("Failed to save uploaded video: %s", e)
+                    await self._reply_error(websocket, cmd, "SAVE_FAILED", str(e))
+
+            elif cmd == CommandType.UPLOAD_GT.value:
+                filename = data.get("filename", "gt_upload.csv")
+                file_data = data.get("data")  # base64 encoded
+                if not file_data:
+                    await self._reply_error(websocket, cmd, "MISSING_DATA", "No file data provided")
+                    continue
+
+                try:
+                    # Decode base64 and save file
+                    file_bytes = base64.b64decode(file_data)
+                    ts = int(time.time() * 1000)
+                    ext = Path(filename).suffix.lstrip(".").lower() or "csv"
+                    dest_name = f"gt_{ts}.{ext}"
+                    dest_path = _UPLOAD_DIR / dest_name
+
+                    with dest_path.open("wb") as f:
+                        f.write(file_bytes)
+
+                    logger.info("Ground truth uploaded via WebSocket: %s (%.1f KB)", dest_name, len(file_bytes) / 1024)
+                    await self._reply_applied(websocket, cmd, {"path": str(dest_path.resolve()), "filename": dest_name})
+                except Exception as e:
+                    logger.error("Failed to save uploaded ground truth: %s", e)
+                    await self._reply_error(websocket, cmd, "SAVE_FAILED", str(e))
 
             else:
                 await self._reply_error(websocket, cmd, "UNKNOWN_COMMAND",

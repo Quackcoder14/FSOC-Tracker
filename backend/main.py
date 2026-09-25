@@ -21,7 +21,6 @@ if str(backend_dir) not in sys.path:
 from app.config.loader import load_config
 from app.core.engine import Engine
 from app.communication.ws_server import WebSocketServer
-from app.communication.http_server import HttpUploadServer
 
 logger = logging.getLogger("fsoc")
 
@@ -32,7 +31,6 @@ def parse_args():
     parser.add_argument("--config", type=str, default="configs/default.yaml", help="Path to config YAML")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="WebSocket bind host")
     parser.add_argument("--port", type=int, default=8765, help="WebSocket bind port")
-    parser.add_argument("--http-port", type=int, default=8766, help="HTTP upload server port")
     parser.add_argument("--headless", action="store_true", help="Run simulation headlessly without waiting for UI")
     parser.add_argument("--duration", type=float, default=10.0, help="Duration for headless run (seconds)")
     parser.add_argument("--video", type=str, default=None, help="Video path for benchmark/video mode")
@@ -76,14 +74,9 @@ async def main():
     server = WebSocketServer(engine, host=args.host, port=args.port)
     await server.start()
 
-    # Initialize HTTP Upload Server (decoupled from engine)
-    http_server = HttpUploadServer(host=args.host, port=args.http_port)
-    await http_server.start()
-
     if args.headless:
         await run_headless(engine, args.duration, args.output_dir)
         await server.stop()
-        await http_server.stop()
         return
 
     # Keep running until cancelled
@@ -109,7 +102,6 @@ async def main():
         logger.info("Shutting down engine and server...")
         engine.stop()
         await server.stop()
-        await http_server.stop()
 
 
 if __name__ == "__main__":
