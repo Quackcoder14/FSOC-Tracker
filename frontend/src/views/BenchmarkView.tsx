@@ -73,13 +73,15 @@ async function uploadFile(file: File, endpoint: "video" | "gt"): Promise<string>
 
     reader.onload = () => {
       const base64Data = reader.result as string;
+      // Strip data URI prefix (e.g., "data:video/mp4;base64,")
+      const rawData = base64Data.split(',')[1];
       const command = endpoint === "video" ? "UPLOAD_VIDEO" : "UPLOAD_GT";
 
       // Send file via WebSocket
       if (endpoint === "video") {
-        wsService.uploadVideo(file.name, base64Data);
+        wsService.uploadVideo(file.name, rawData);
       } else {
-        wsService.uploadGt(file.name, base64Data);
+        wsService.uploadGt(file.name, rawData);
       }
 
       // Wait for response

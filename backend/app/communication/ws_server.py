@@ -59,7 +59,7 @@ class WebSocketServer:
             self._handler,
             self.host,
             self.port,
-            max_size=10 * 1024 * 1024,  # 10 MB limit for base64 image frames
+            max_size=50 * 1024 * 1024,  # 50 MB limit for base64 video uploads
             ping_interval=20,
             ping_timeout=20,
         )
@@ -225,9 +225,12 @@ class WebSocketServer:
                     await self._reply_error(websocket, cmd, "MISSING_DATA", "No file data provided")
                     continue
 
+                logger.info("Received upload request: %s, data size: %d bytes", filename, len(file_data))
+
                 try:
                     # Decode base64 and save file
                     file_bytes = base64.b64decode(file_data)
+                    logger.info("Decoded file size: %d bytes", len(file_bytes))
                     ts = int(time.time() * 1000)
                     ext = Path(filename).suffix.lstrip(".").lower() or "mp4"
                     dest_name = f"video_{ts}.{ext}"
@@ -249,9 +252,12 @@ class WebSocketServer:
                     await self._reply_error(websocket, cmd, "MISSING_DATA", "No file data provided")
                     continue
 
+                logger.info("Received GT upload request: %s, data size: %d bytes", filename, len(file_data))
+
                 try:
                     # Decode base64 and save file
                     file_bytes = base64.b64decode(file_data)
+                    logger.info("Decoded GT file size: %d bytes", len(file_bytes))
                     ts = int(time.time() * 1000)
                     ext = Path(filename).suffix.lstrip(".").lower() or "csv"
                     dest_name = f"gt_{ts}.{ext}"
