@@ -1,4 +1,4 @@
-# FSOC Tracker
+# NAYAN
 
 A real-time optical tracking system for Free-Space Optical Communication (FSOC) coarse alignment, featuring a React frontend and Python backend with WebSocket communication.
 
@@ -40,12 +40,12 @@ A real-time optical tracking system for Free-Space Optical Communication (FSOC) 
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │  HTTP Upload Server (port 8766)                       │   │
 │  │  - Video file upload                                  │   │
-│  │  - Ground truth upload                               │   │
+│  │  - Ground truth upload                                │   │
 │  └──────────────────────────────────────────────────────┘   │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │  Engine Core                                           │   │
 │  │  - Frame source (simulation/video)                     │   │
-│  │  - Detection pipeline                                 │   │
+│  │  - Detection pipeline                                  │   │
 │  │  - Tracking (Kalman filter)                           │   │
 │  │  - Control (PID controller)                           │   │
 │  │  - Evaluation (RMSE, lock retention)                  │   │
@@ -160,7 +160,7 @@ This application uses a hybrid deployment strategy:
 1. **Create a new Web Service** on Render
 2. Connect your Git repository
 3. Configure the service:
-   - **Name**: `fsoc-tracker-backend`
+   - **Name**: `nayan-backend`
    - **Runtime**: Python 3
    - **Root Directory**: `backend`
    - **Build Command**: `pip install -r requirements.txt`
@@ -180,7 +180,7 @@ Render will automatically detect the `Procfile` in the backend directory.
    - **Output Directory**: `frontend/dist`
 4. Add Environment Variable:
    - **Key**: `VITE_BACKEND_WS_URL`
-   - **Value**: `wss://fsoc-tracker-backend.onrender.com` (replace with your actual backend URL)
+   - **Value**: `wss://nayan-backend.onrender.com` (replace with your actual backend URL)
 5. Click "Deploy"
 
 The `vercel.json` file in the repository root provides the necessary configuration for Vercel.
@@ -189,7 +189,7 @@ The `vercel.json` file in the repository root provides the necessary configurati
 
 After both services are deployed:
 
-1. Get your backend URL from Render (e.g., `https://fsoc-tracker-backend.onrender.com`)
+1. Get your backend URL from Render (e.g., `https://nayan-backend.onrender.com`)
 2. Update the frontend environment variable:
    - Go to your Vercel project → Settings → Environment Variables
    - Update `VITE_BACKEND_WS_URL` to `wss://your-backend-url.onrender.com`
@@ -350,7 +350,7 @@ fsoc-tracker/
 
 ## License
 
-This project is part of the FSOC Tracker system. See LICENSE file for details.
+This project is part of the NAYAN system. See LICENSE file for details.
 
 ## Contributing
 

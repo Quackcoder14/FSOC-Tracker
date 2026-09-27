@@ -12,7 +12,7 @@ import { FullscreenContainer } from "./components/FullscreenContainer";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import {
   Radio,
-  Sliders,
+  Eye,
   Gauge,
   Microscope,
   FileText,
@@ -239,14 +239,14 @@ export const App: React.FC = () => {
           {/* Left: Identity */}
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-8 h-8 rounded border border-[#26364A] bg-[#111A28] flex-shrink-0">
-              <Sliders className="w-4 h-4 text-[#F28C28]" />
+              <Eye className="w-4 h-4 text-[#F28C28]" />
             </div>
             <div>
               <div className="font-sans font-semibold text-[14px] text-[#E8EDF3] leading-none tracking-wide">
-                FSOC TRACKER
+                NAYAN
               </div>
               <div className="font-sans text-[10px] text-[#738397] leading-none mt-0.5 tracking-wide uppercase">
-                Coarse Alignment & Virtual PAT
+                Optical Acquisition & Coarse Alignment
               </div>
             </div>
           </div>
@@ -514,7 +514,7 @@ export const App: React.FC = () => {
           <div className="flex items-center gap-4 font-sans text-[10px] text-[#738397]">
             <span>BUILD 0.4.2</span>
             <span className="text-[#1B2839]">|</span>
-            <span>FSOC TRACKER</span>
+            <span>NAYAN</span>
           </div>
         </footer>
       </div>

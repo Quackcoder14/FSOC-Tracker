@@ -1,5 +1,5 @@
 """
-Generate demo benchmark dataset (MP4 video + ground-truth CSV) for FSOC Tracker.
+Generate demo benchmark dataset (MP4 video + ground-truth CSV) for NAYAN.
 Uses VirtualCamera projection to ensure ground truth matches visual beacon location.
 """
 

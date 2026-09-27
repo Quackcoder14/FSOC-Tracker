@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "fsoc-tracker",
+  "productName": "NAYAN",
   "version": "0.1.0",
   "identifier": "com.tauri.dev",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "FSOC Coarse Alignment Virtual Tracking System",
+        "title": "NAYAN — Optical Acquisition & Coarse Alignment",
         "width": 1280,
         "height": 860,
         "resizable": true,

@@ -1,5 +1,5 @@
 """
-Release Build & Packaging Script for FSOC Coarse Alignment Desktop Application.
+Release Build & Packaging Script for NAYAN Optical Acquisition & Coarse Alignment Desktop Application.
 
 Orchestrates:
   1. Frontend production compilation (Vite + TypeScript)
@@ -72,10 +72,10 @@ def assemble_release():
     shutil.copytree(ROOT_DIR / "models", DIST_DIR / "models")
 
     # Create launcher script
-    launcher_bat = DIST_DIR / "launch_fsoc_tracker.bat"
+    launcher_bat = DIST_DIR / "launch_nayan.bat"
     with open(launcher_bat, "w") as f:
         f.write("@echo off\n")
-        f.write("echo Starting FSOC Tracking System...\n")
+        f.write("echo Starting NAYAN Optical Acquisition & Coarse Alignment...\n")
         f.write("start \"\" fsoc-sidecar.exe --mode simulation --port 8765\n")
         f.write("timeout /t 2 /nobreak >nul\n")
         f.write("start \"\" ui\\index.html\n")
